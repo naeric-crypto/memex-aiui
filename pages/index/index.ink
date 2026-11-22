@@ -48,6 +48,7 @@ const RESEND_CODES = ['network', 'busy', 'rate_limited', 'bad_response', 'unavai
 const TERMINAL_CODES = ['backend_failed', 'timeout', 'no_evidence'];
 
 function detach(rec) {
+  rec.onstart = null;
   rec.onresult = null;
   rec.onnomatch = null;
   rec.onerror = null;
@@ -69,6 +70,10 @@ export default {
   },
 
   onLoad(query) {
+    const keys = query && typeof query === 'object' ? Object.keys(query) : [];
+    // 임의의 키에도 원문이 들어올 수 있어 입력 구조를 나타내는 이름만 기록한다.
+    const knownKeys = keys.filter((k) => ['question', 'data', 'query', 'schema', 'source'].includes(k));
+    console.log(`[memex] onLoad queryKeys=${knownKeys.join(',') || '-'} other=${keys.length - knownKeys.length}`);
     this.loadedAt = Date.now();
     this.lastTap = 0;
     this.run = 0;
@@ -170,6 +175,7 @@ export default {
   // ---- 화면 상태 ----
 
   show(state, patch) {
+    console.log(`[memex] state ${state}`);
     const s = statusOf(state);
     this.setData({ state, glyph: s.glyph, label: s.label, ...patch });
   },
@@ -257,6 +263,9 @@ export default {
         },
         onClosed: () => {
           if (run === this.run) this.setData({ message: '서버에서 안경 연결을 열어 주세요', hint: '열리면 자동으로 코드가 뜹니다' });
+        },
+        onNetworkWait: () => {
+          if (run === this.run) this.setData({ message: '서버 연결을 기다리는 중…', hint: '자동으로 다시 시도합니다' });
         },
       });
       if (run !== this.run || p === null) return;
@@ -452,9 +461,13 @@ export default {
       else this.ask(session.text, 'speech', null);
     };
     session.finish = finish;
+    rec.onstart = () => {
+      if (current()) console.log('[memex] speech start');
+    };
     rec.onresult = (event) => {
       if (!current()) return;
       const t = readTranscript(event);
+      console.log(`[memex] speech result length=${Array.from(t).length}`);
       if (!t) return;
       session.text = t;
       this.setData({ heard: oneLine(t, 26) });
@@ -463,14 +476,21 @@ export default {
       session.grace = setTimeout(() => finish(false), RESULT_GRACE_MS);
     };
     rec.onnomatch = () => {
-      if (current()) session.error = session.error || 'empty_speech';
+      if (!current()) return;
+      console.log('[memex] speech nomatch');
+      session.error = session.error || 'empty_speech';
     };
     rec.onerror = (event) => {
       if (!current()) return;
       session.error = speechErrorCode(event && event.error);
+      console.log(`[memex] speech error ${session.error}`);
       finish(false);
     };
-    rec.onend = () => finish(true);
+    rec.onend = () => {
+      if (!current()) return;
+      console.log('[memex] speech end');
+      finish(true);
+    };
     this.speech = session;
     this.retry = null;
     this.show('listening', { heard: '', lines: [], elapsed: '', message: '듣고 있어요…', hint: '말을 마치면 자동으로 찾습니다' });
