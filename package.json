@@ -1,0 +1,12 @@
+{
+  "name": "memex-naememo",
+  "version": "0.1.0",
+  "description": "내메모: Rokid Glasses 에서 개인 메모를 음성으로 찾아 렌즈에 보여 주는 AIUI 에이전트",
+  "main": "app.js",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test --test-timeout=30000 \"test/*.test.mjs\""
+  },
+  "dependencies": {}
+}

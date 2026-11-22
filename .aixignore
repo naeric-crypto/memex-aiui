@@ -1,0 +1,6 @@
+# AIX 패키지에서 뺄 개발용 파일
+test/
+README.md
+package-lock.json
+node_modules/
+*.log

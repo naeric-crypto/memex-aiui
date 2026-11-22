@@ -1,0 +1,15 @@
+{
+  "agentName": "내메모",
+  "agentDesc": "내 메모에서 일정·사람·장소·지난 기록을 찾아 렌즈에 짧게 보여 주는 개인 비서. Searches my personal memos and shows a short answer. Read-only.",
+  "pages": [
+    "pages/index/index"
+  ],
+  "entryPagePath": "pages/index/index",
+  "window": {
+    "navigationBarTitleText": "내메모"
+  },
+  "permissions": [
+    "RECORD_AUDIO",
+    "INTERNET"
+  ]
+}
