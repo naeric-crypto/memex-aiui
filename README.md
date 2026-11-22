@@ -1,5 +1,8 @@
 # aiui — 안경 에이전트 '내메모'
 
+> 이 폴더는 공개 저장소 [naeric-crypto/memex-aiui](https://github.com/naeric-crypto/memex-aiui) 로 자동 복사된다(10분 안, `test/` 제외).
+> Studio 는 그 공개 저장소를 가져간다. 여기에 비밀·서버 경로·실명을 넣지 않는다. 고치는 곳은 원본(비공개) 저장소뿐이다.
+
 AIUI Studio Global 이 가져오는 폴더. 이 폴더만으로 완결된다(`test/` 만 `../gateway` 를 불러 쓰고 패키지에서는 빠진다).
 
 | 파일 | 내용 |
